@@ -136,8 +136,6 @@ GPIOWrite(int pin, int value)
 int
 main(int argc, char *argv[])
 {
-	int repeat = 10;
-
 	/*
 	 * Enable GPIO pins
 	 */
@@ -158,7 +156,7 @@ main(int argc, char *argv[])
 	subscriber.connect("tcp://10.16.4.16:5556");
 	subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
-
+  bool repeat = false;
 	do {
     /*
      *  Await message
@@ -169,7 +167,7 @@ main(int argc, char *argv[])
 		/*
 		 * Write GPIO value
 		 */
-		if (-1 == GPIOWrite(POUT, repeat % 2))
+		if (-1 == GPIOWrite(POUT, repeat))
 			return(3);
 
 		/*
@@ -178,8 +176,9 @@ main(int argc, char *argv[])
 		printf("I'm reading %d in GPIO %d\n", GPIORead(PIN), PIN);
 
 		usleep(500 * 1000);
+    repeat = !repeat;
 	}
-	while (repeat--);
+	while (true);
 
 	/*
 	 * Disable GPIO pins
